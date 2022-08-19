@@ -31,7 +31,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
 
 class TagViewSet(mixins.UpdateModelMixin,
-                 mixins.ListModelMixin, viewsets.GenericViewSet):
+                 mixins.ListModelMixin,
+                 mixins.DestroyModelMixin,
+                 viewsets.GenericViewSet):
     """Manage the tags in the database."""
     serializer_class = serializers.TagSerializer
     queryset = Tag.objects.all()
