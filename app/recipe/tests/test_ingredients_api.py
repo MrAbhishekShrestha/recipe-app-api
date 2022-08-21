@@ -52,7 +52,7 @@ class PrivateIngredientsAPITests(TestCase):
         self.assertEqual(res.data, serializer.data)
 
     def test_ingredients_limited_to_user(self):
-        """test list of ingredients is limited to authenticated user."""
+        """Test list of ingredients is limited to authenticated user."""
         user2 = create_user(email="user2@example.com")
         Ingredient.objects.create(user=user2, name="Salt")
         ingredient = Ingredient.objects.create(user=self.user, name="Sugar")
@@ -61,3 +61,21 @@ class PrivateIngredientsAPITests(TestCase):
         self.assertEqual(len(res.data), 1)
         self.assertEqual(res.data[0]['name'], ingredient.name)
         self.assertEqual(res.data[0]['id'], ingredient.id)
+
+    def test_update_ingredient(self):
+        """Test updating an ingredient."""
+        ingredient = Ingredient.objects.create(user=self.user, name="Salt")
+        url = detail_url(ingredient.id)
+        payload = {"name": "Sugar"}
+        res = self.client.put(url, payload)
+        ingredient.refresh_from_db()
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(ingredient.name, payload["name"])
+
+    def test_deleting_ingredient(self):
+        """Test deleting an ingredient."""
+        ingredient = Ingredient.objects.create(user=self.user, name="Salt")
+        url = detail_url(ingredient.id)
+        res = self.client.delete(url)
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Ingredient.objects.filter(id=ingredient.id).exists())
