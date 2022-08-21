@@ -47,7 +47,7 @@ class PrivateIngredientsAPITests(TestCase):
         Ingredient.objects.create(name="Salt", user=self.user)
         res = self.client.get(INGREDIENTS_URL)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        ingredients = Ingredient.objects.all().order_by()
+        ingredients = Ingredient.objects.all().order_by("-name")
         serializer = IngredientSerializer(ingredients, many=True)
         self.assertEqual(res.data, serializer.data)
 
